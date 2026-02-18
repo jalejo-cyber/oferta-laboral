@@ -1,0 +1,9 @@
+{
+  "name": "oferta-laboral",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "nodemailer": "^6.9.8",
+    "formidable": "^3.5.1"
+  }
+}
