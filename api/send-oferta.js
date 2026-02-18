@@ -1,0 +1,73 @@
+import nodemailer from "nodemailer";
+import formidable from "formidable";
+import fs from "fs";
+
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+export default async function handler(req, res) {
+  try {
+
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "Method not allowed" });
+    }
+
+    const form = formidable({
+      multiples: false,
+      allowEmptyFiles: true,
+      minFileSize: 0,
+    });
+
+    const { fields, files } = await new Promise((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) reject(err);
+        else resolve({ fields, files });
+      });
+    });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const attachments = [];
+
+    if (files.fileInput) {
+      const file = Array.isArray(files.fileInput)
+        ? files.fileInput[0]
+        : files.fileInput;
+
+      if (file?.filepath) {
+        attachments.push({
+          filename: file.originalFilename || "oferta",
+          content: fs.readFileSync(file.filepath),
+        });
+      }
+    }
+
+    await transporter.sendMail({
+      from: `"Oferta Laboral Web" <${process.env.EMAIL_USER}>`,
+      to: "jalejo@fomentformacio.com",
+      subject: `Nova oferta laboral - ${fields.empresa}`,
+      text: `
+Empresa o persona: ${fields.empresa}
+
+Text oferta:
+${fields.ofertaText}
+      `,
+      attachments,
+    });
+
+    return res.status(200).json({ ok: true });
+
+  } catch (err) {
+    console.error("ERROR REAL:", err);
+    return res.status(500).json({ error: err.message || "Server error" });
+  }
+}
