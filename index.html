@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Enviar Oferta Laboral</title>
+<title>Oferta laboral - Agència de Col·locació</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -25,16 +25,27 @@ body {
   background: #ffffff;
   display: flex;
   justify-content: center;
-  padding: 60px 20px;
+  padding: 40px 20px;
 }
 
 .form-container {
   width: 100%;
-  max-width: 520px;
+  max-width: 650px;
+}
+
+h1 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.intro {
+  font-size: 14px;
+  margin-bottom: 30px;
+  line-height: 1.6;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 label {
@@ -42,32 +53,27 @@ label {
   font-size: 13px;
   font-weight: 500;
   color: var(--label-color);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
-input[type="text"],
-textarea {
+input, textarea {
   width: 100%;
   padding: 14px 16px;
   border-radius: 10px;
   border: none;
   background: var(--input-bg);
   font-size: 14px;
-  color: var(--text-color);
   outline: none;
-  resize: vertical;
 }
 
 textarea {
-  min-height: 140px;
+  min-height: 120px;
 }
 
 input:focus,
 textarea:focus {
   box-shadow: 0 0 0 2px rgba(214, 0, 42, 0.15);
 }
-
-/* FILE UPLOAD */
 
 .file-upload {
   display: flex;
@@ -77,7 +83,7 @@ textarea:focus {
   border: 1px solid #dddddd;
   background: #f5f5f5;
   height: 48px;
-  margin-bottom: 18px;
+  margin-top: 10px;
 }
 
 .file-upload button {
@@ -86,8 +92,6 @@ textarea:focus {
   border: none;
   padding: 0 22px;
   height: 100%;
-  font-size: 14px;
-  font-weight: 500;
   cursor: pointer;
 }
 
@@ -102,10 +106,8 @@ textarea:focus {
   display: none;
 }
 
-/* BOTÓ ENVIAR */
-
 .submit-btn {
-  margin-top: 10px;
+  margin-top: 20px;
   background: var(--primary);
   color: white;
   border: none;
@@ -115,12 +117,17 @@ textarea:focus {
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.25s ease;
 }
 
-.submit-btn:hover {
-  opacity: 0.92;
-  transform: translateY(-1px);
+.popup {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #28a745;
+  color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  display: none;
 }
 </style>
 </head>
@@ -128,33 +135,103 @@ textarea:focus {
 <body>
 
 <div class="form-container">
-  <form id="ofertaForm">
 
-    <div class="form-group">
-      <label>Empresa o persona sol·licitant</label>
-      <input type="text" name="empresa" required>
-    </div>
+<h1>Oferta laboral - Agència de Col·locació</h1>
 
-    <div class="form-group">
-      <label>Text de l’oferta laboral</label>
-      <textarea name="ofertaText" placeholder="Enganxa aquí l’oferta..." required></textarea>
-    </div>
+<div class="intro">
+Mitjançant aquest formulari podreu emplenar les dades de l'oferta laboral.<br><br>
+La informació aportada serà utilitzada únicament per l'agència de col·locació.<br><br>
+Per tal de poder fer un cribatge exhaustiu dels/de les candidats/tes, us agrairíem que contestéssiu totes les preguntes d'aquest formulari.<br><br>
+Un cop enviats els candidats, és obligatori que ens notifiqueu:
+• Nom i cognoms persona contractada<br>
+• Tipus de contracte<br>
+• Data d’inici<br>
+• CIF empresa contractant<br>
+• Raó social<br><br>
+Moltes gràcies per la vostra col·laboració.
+</div>
 
-    <div class="file-upload">
-      <button type="button" id="fileBtn">Adjuntar Word/PDF</button>
-      <span id="fileName">Cap arxiu seleccionat</span>
-      <input type="file" name="fileInput" id="fileInput" accept=".pdf,.doc,.docx">
-    </div>
+<form id="ofertaForm">
 
-    <button type="submit" class="submit-btn">Enviar oferta</button>
+<div class="form-group">
+<label>Data oferta</label>
+<input type="date" name="dataOferta" required>
+</div>
 
-  </form>
+<div class="form-group">
+<label>Empresa</label>
+<input type="text" name="empresa" required>
+</div>
+
+<div class="form-group">
+<label>CIF</label>
+<input type="text" name="cif" required>
+</div>
+
+<div class="form-group">
+<label>Raó Social</label>
+<input type="text" name="raoSocial" required>
+</div>
+
+<div class="form-group">
+<label>Persona de Contacte</label>
+<input type="text" name="personaContacte" required>
+</div>
+
+<div class="form-group">
+<label>Mail Contacte</label>
+<input type="email" name="mailContacte" required>
+</div>
+
+<div class="form-group">
+<label>Telèfon</label>
+<input type="tel" name="telefon" required>
+</div>
+
+<div class="form-group">
+<label>Denominació del lloc de treball</label>
+<input type="text" name="llocTreball" required>
+</div>
+
+<div class="form-group">
+<label>Indica TRES funcions (separades per ; )</label>
+<textarea name="funcions" placeholder="Funció 1 ; Funció 2 ; Funció 3" required></textarea>
+</div>
+
+<div class="form-group">
+<label>Nombre de Vacants</label>
+<input type="number" name="vacants" required>
+</div>
+
+<div class="form-group">
+<label>Tipus de Contracte</label>
+<input type="text" name="tipusContracte" required>
+</div>
+
+<div class="form-group">
+<label>Adjuntar Oferta PDF</label>
+<div class="file-upload">
+<button type="button" id="fileBtn">Adjuntar PDF</button>
+<span id="fileName">Cap arxiu seleccionat</span>
+<input type="file" name="fileInput" id="fileInput" accept=".pdf" required>
+</div>
+</div>
+
+<button type="submit" class="submit-btn">Enviar oferta</button>
+
+</form>
+
+</div>
+
+<div class="popup" id="popup">
+Has enviat l'oferta correctament, gràcies!
 </div>
 
 <script>
 const fileBtn = document.getElementById("fileBtn");
 const fileInput = document.getElementById("fileInput");
 const fileName = document.getElementById("fileName");
+const popup = document.getElementById("popup");
 
 fileBtn.addEventListener("click", () => fileInput.click());
 
@@ -175,7 +252,8 @@ document.getElementById("ofertaForm").addEventListener("submit", async function(
   });
 
   if(res.ok){
-    alert("Oferta enviada correctament");
+    popup.style.display = "block";
+    setTimeout(() => popup.style.display = "none", 4000);
     this.reset();
     fileName.textContent = "Cap arxiu seleccionat";
   } else {
