@@ -10,15 +10,14 @@ export const config = {
 
 export default async function handler(req, res) {
   try {
-
     if (req.method !== "POST") {
       return res.status(405).json({ error: "Method not allowed" });
     }
 
     const form = formidable({
       multiples: false,
-      allowEmptyFiles: true,
-      minFileSize: 0,
+      allowEmptyFiles: false,
+      minFileSize: 1,
     });
 
     const { fields, files } = await new Promise((resolve, reject) => {
@@ -28,6 +27,42 @@ export default async function handler(req, res) {
       });
     });
 
+    // VALIDACIÓ BACKEND EXTRA (seguretat)
+    const requiredFields = [
+      "dataOferta",
+      "empresa",
+      "cif",
+      "raoSocial",
+      "personaContacte",
+      "mailContacte",
+      "telefon",
+      "llocTreball",
+      "funcions",
+      "vacants",
+      "tipusContracte"
+    ];
+
+    for (const field of requiredFields) {
+      if (!fields[field]) {
+        return res.status(400).json({ error: `Falta el camp ${field}` });
+      }
+    }
+
+    if (!files.fileInput) {
+      return res.status(400).json({ error: "El PDF és obligatori" });
+    }
+
+    const file = Array.isArray(files.fileInput)
+      ? files.fileInput[0]
+      : files.fileInput;
+
+    const attachments = [
+      {
+        filename: file.originalFilename || "oferta.pdf",
+        content: fs.readFileSync(file.filepath),
+      },
+    ];
+
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -36,30 +71,24 @@ export default async function handler(req, res) {
       },
     });
 
-    const attachments = [];
-
-    if (files.fileInput) {
-      const file = Array.isArray(files.fileInput)
-        ? files.fileInput[0]
-        : files.fileInput;
-
-      if (file?.filepath) {
-        attachments.push({
-          filename: file.originalFilename || "oferta",
-          content: fs.readFileSync(file.filepath),
-        });
-      }
-    }
-
     await transporter.sendMail({
-      from: `"Oferta Laboral Web" <${process.env.EMAIL_USER}>`,
+      from: `"Agència de Col·locació" <${process.env.EMAIL_USER}>`,
       to: "jalejo@fomentformacio.com",
-      subject: `Nova oferta laboral - ${fields.empresa}`,
+      subject: "Nova vacant - Agència de col·locació",
       text: `
-Empresa o persona: ${fields.empresa}
+NOVA OFERTA LABORAL
 
-Text oferta:
-${fields.ofertaText}
+Data oferta: ${fields.dataOferta}
+Empresa: ${fields.empresa}
+CIF: ${fields.cif}
+Raó Social: ${fields.raoSocial}
+Persona de contacte: ${fields.personaContacte}
+Mail contacte: ${fields.mailContacte}
+Telèfon: ${fields.telefon}
+Denominació lloc de treball: ${fields.llocTreball}
+Funcions: ${fields.funcions}
+Nombre de vacants: ${fields.vacants}
+Tipus de contracte: ${fields.tipusContracte}
       `,
       attachments,
     });
@@ -67,7 +96,7 @@ ${fields.ofertaText}
     return res.status(200).json({ ok: true });
 
   } catch (err) {
-    console.error("ERROR REAL:", err);
-    return res.status(500).json({ error: err.message || "Server error" });
+    console.error("ERROR:", err);
+    return res.status(500).json({ error: "Error intern del servidor" });
   }
 }
